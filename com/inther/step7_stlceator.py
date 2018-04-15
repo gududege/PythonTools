@@ -213,14 +213,16 @@ def run(myframe):
         seqnumberstep = int(myframe.seqnumberstep.Value)
         destdbnumber = myframe.destdbnumber.Value
         destbit = float(myframe.deststartbit.Value)
+        if destbit - math.floor(destbit) >= 0.71:
+            raise Exception('初始位输入值超范围!')
         i = seqnumberbegin
         while i <= seqnumberend:
-            # plc位为8进制，此处因为浮点数精度问题，只要大于0.7就认为到0.8了
-            if destbit - math.floor(destbit) >= 0.71:
-                destbit = math.ceil(destbit)
             string += '%s\n%s\t%s%s%s\n=\tDB%s.DBX%.1f\n' % (firstlinetxt, bittype, symbol1, i, symbol2,
                                                              destdbnumber, destbit)
             destbit += 0.1
+            # plc位为8进制，此处因为浮点数精度问题，只要大于0.7就认为到0.8了
+            if destbit - math.floor(destbit) >= 0.71:
+                destbit = math.ceil(destbit)
             i += seqnumberstep
         myframe.deststartbit.Value = '%.1f' % destbit
         resultframe = ResultFrame(None)
