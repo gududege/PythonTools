@@ -12,4 +12,5 @@
 
 4. 使用`pip install -r *.txt`来安装source/env文件夹下对应项目的依赖包
 
+5. 使用时先在cmd中使用`cd`命令切换到py文件目录，再使用`python *.py`来打开程序
    ​

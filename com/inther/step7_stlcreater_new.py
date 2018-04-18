@@ -458,7 +458,6 @@ if __name__ == '__main__':
     app = wx.App()
     screen_width = wx.DisplaySize()[0]
     screen_height = wx.DisplaySize()[1]
-    print(screen_width, screen_height)
     frame = ConfigFrame(None)
     frame.Show()
     app.MainLoop()
