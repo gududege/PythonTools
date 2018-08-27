@@ -21,7 +21,7 @@ class ConfigFrame(wx.Frame):
 
     def __init__(self, parent):
         wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=u"Step7 StlCreator V1.0", pos=wx.DefaultPosition,
-                          size=wx.DefaultSize, style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
+                          size=(screen_width / 3, screen_height / 2), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
 
         self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
 

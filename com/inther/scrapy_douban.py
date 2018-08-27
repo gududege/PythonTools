@@ -4,6 +4,7 @@ from PIL import Image
 from io import BytesIO
 import re
 import json
+import os
 
 user_agent = r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) ' \
              r'Chrome/66.0.3359.139 Safari/537.36'
@@ -62,7 +63,13 @@ def _login_douban_without_captcha(seesion, login_mail, password):
 
 
 def _login_douban_by_cookie(seesion, cookie):
-    pass
+    header = {'Cookie': cookie}
+    header.update(_headers)
+    seesion.get(_douban_host, headers=header)
+    if seesion.cookies.get('dbcl2'):
+        return True
+    else:
+        return False
 
 
 def get_one_page_movie_list(url, **kwargs):
@@ -124,16 +131,29 @@ def get_one_page_book_list(url, **kwargs):
 class MyDouban:
 
     def __init__(self, mail, password):
-        init_content = _get_response_content(_douban_host + '/login')
-        if _detect_if_has_captcha(init_content):
-            info = _get_login_captcha_info(init_content)
-            self.session = requests.session()
-            if not _login_douban_with_captcha(self.session, mail, password, info[0], info[1]):
-                raise Exception('登录信息输入错误')
+        login_by_cookie = True
+        if os.path.exists(_cookie_file_path) and os.path.isfile(_cookie_file_path):
+            with open(_cookie_file_path, 'r') as f:
+                cookie = json.loads(f.read()).get('Cookie')
+                if cookie is not None:
+                    self.session = requests.session()
+                    if not _login_douban_by_cookie(self.session, cookie):
+                        raise Exception('Cookie信息有误')
+                else:
+                    login_by_cookie = False
         else:
-            self.session = requests.session()
-            if not _login_douban_without_captcha(self.session, mail, password):
-                raise Exception('登录信息输入错误')
+            login_by_cookie = False
+        if not login_by_cookie:
+            init_content = _get_response_content(_douban_host + '/login')
+            if _detect_if_has_captcha(init_content):
+                info = _get_login_captcha_info(init_content)
+                self.session = requests.session()
+                if not _login_douban_with_captcha(self.session, mail, password, info[0], info[1]):
+                    raise Exception('登录信息输入错误')
+            else:
+                self.session = requests.session()
+                if not _login_douban_without_captcha(self.session, mail, password):
+                    raise Exception('登录信息输入错误')
         self.person_id = self.session.cookies.get('dbcl2').split('"')[1].split(':')[0]
         self.person_index = _douban_host + '/people/' + self.person_id
         self.movie_collect = _douban_host + '/people/' + self.person_id + r'/collect'
