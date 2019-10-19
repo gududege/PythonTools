@@ -13,7 +13,7 @@
 4. 使用`pip install -r *.txt`来安装source/env文件夹下对应项目的依赖包
 
 5. 使用时先在cmd中使用`cd`命令切换到py文件目录，再使用`python *.py`来打开程序
-   ​
-###已知Bug
+
+##已知Bug
 
 1. 在切换Panel时面板样式显示不对，拖动Frame后改变后显示正常
